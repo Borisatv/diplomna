@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='table.css')}}">
+</head>
+<body>
+<form action="{{ url_for('session') }}" method="post" autocomplete="off">
+    <nav class="navbar">
+        <ul>
+            <li><a href="http://127.0.0.1:5000/">Home</a></li>
+            <li><a href="http://127.0.0.1:5000/registrations">Registrations</a></li>
+            <li><a href="http://127.0.0.1:5000/sessions">Parliamentary sessions</a></li>
+            <li><a href="http://127.0.0.1:5000/graphics">Graphics</a></li>
+        </ul>
+    </nav>
+    <div class="form-group">
+        <label class="cols-sm-2 control-label">Въведете партия:</label>
+         <div class="cols-sm-10">
+           <div class="input-group">
+            <span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
+               <label for="party"></label>
+               <select name="party" id="party">
+                   <option value="">Партии</option>
+                   {% for row in data['parties'] %}
+                   <option value="{{ row }}">{{ row }}</option>
+                   {% endfor %}
+               </select>
+               <label class="cols-sm-2 control-label">Въведете заседание:</label>
+                <div class="cols-sm-10">
+                 <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
+                    <label for="name"></label>
+                    <input type="text" class="form-control" name="name" id="name" placeholder="регистрация"/>
+                </div>
+                </div>
+                </div>
+               <!--input type="text" class="form-control" name="party" id="party" placeholder="партия"/-->
+                   <input type="submit" value="търсене">
+          </div>
+         </div>
+    </div>
+    <table>
+        <tbody>
+            {% for row in data['table'] %}
+                <tr>
+                    {% for d in row %}
+                        <td>{{ d }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+</body>
+</html>
