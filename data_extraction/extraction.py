@@ -1,31 +1,8 @@
 import openpyxl
 import requests
-import mysql.connector
 from pathlib import Path
+from flask_app.models import *
 
-db = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    passwd='21436587',
-    database='sessions'
-)
-
-my_cursor = db.cursor()
-my_cursor.execute("DROP TABLE IF EXISTS sessions")
-my_cursor.execute("DROP TABLE IF EXISTS registrations")
-my_cursor.execute("CREATE TABLE sessions("
-                  "name VARCHAR(2000),"
-                  "political_group VARCHAR(100),"
-                  "for_ VARCHAR(20),"
-                  "against_ VARCHAR(20),"
-                  "abstained VARCHAR(20),"
-                  "voted VARCHAR(20));")
-my_cursor.execute("CREATE TABLE registrations("
-                  "name VARCHAR(2000),"
-                  "political_group VARCHAR(100),"
-                  "present VARCHAR(20),"
-                  "by_list INT,"
-                  "plus_online VARCHAR (20));")
 
 sten_files = [
     'https://www.parliament.bg/pub/StenD/20210205030723gv290121+online.xlsx',
@@ -157,82 +134,107 @@ while i < len(sten_files):
     i += 1
 
 y = 0
+clean_voting = []
 while y < len(all_voting):
-    if "Номер (1)" in all_voting[y][0][0]:
-        z = 1
-        while z < len(all_voting[y][z]):
-            political_group_reg = ' '.join(all_voting[y][z][0])
-            name_reg = ' '.join(all_voting[y][0][0])
-            by_list = int(all_voting[y][z][2])
-            try:
-                present = ''.join(all_voting[y][z][1])
-            except TypeError:
-                try:
-                    present = int(all_voting[y][z][1])
-                except ValueError:
-                    present = 'NULL'
-                except TypeError:
-                    present = 'NULL'
-            try:
-                plus_online = ' '.join(all_voting[y][z][3])
-            except TypeError:
-                try:
-                    plus_online = int(all_voting[y][z][3])
-                except ValueError:
-                    plus_online = 'NULL'
-                except TypeError:
-                    plus_online = 'NULL'
-            my_cursor.execute("INSERT INTO registrations("
-                              "name, political_group, present, by_list, plus_online)"
-                              "VALUES(%s, %s, %s, %s, %s);",
-                              (name_reg, political_group_reg, present, by_list, plus_online))
-            db.commit()
+    if "РЕГИСТРАЦИЯ" in all_voting[y][0][0]:
+        pass
+        z = 2
+        while z < len(all_voting[y]):
+            if 'None' in str(all_voting[y][z][1]):
+                pass
+            else:
+                clean_reg = [[all_voting[y][0][0]], all_voting[y][z]]
+                clean_voting.append(clean_reg)
             z += 1
     else:
-        x = 1
-        while x < len(all_voting[y][x]):
-            name = ' '.join(all_voting[y][0][0])
-            political_group = ' '.join(all_voting[y][x][0])
-            try:
-                for_ = ''.join(all_voting[y][x][1])
-            except TypeError:
-                try:
-                    for_ = int(all_voting[y][x][1])
-                except ValueError:
-                    for_ = 'NULL'
-                except TypeError:
-                    for_ = 'NULL'
-            try:
-                against_ = ''.join(all_voting[y][x][2])
-            except TypeError:
-                try:
-                    against_ = int(all_voting[y][x][2])
-                except ValueError:
-                    against_ = 'NULL'
-                except TypeError:
-                    against_ = 'NULL'
-            try:
-                abstained = ' '.join(all_voting[y][x][3])
-            except TypeError:
-                try:
-                    abstained = int(all_voting[y][x][3])
-                except ValueError:
-                    abstained = 'NULL'
-                except TypeError:
-                    abstained = 'NULL'
-            try:
-                voted = ' '.join(all_voting[y][x][4])
-            except TypeError:
-                try:
-                    voted = int(all_voting[y][x][4])
-                except ValueError:
-                    voted = 'NULL'
-                except TypeError:
-                    voted = 'NULL'
-            my_cursor.execute("INSERT INTO sessions("
-                              "name, political_group, for_, against_,abstained, voted)"
-                              "VALUES(%s, %s, %s, %s, %s, %s);",
-                              (name, political_group, for_, against_, abstained, voted))
-            db.commit()
+        x = 2
+        while x < len(all_voting[y]):
+            if "Номер" in str(all_voting[y][x][0]):
+                pass
+            elif 'None' in str(all_voting[y][x][1]):
+                pass
+            else:
+                clean_sess = [[all_voting[y][0][0]], all_voting[y][x]]
+                clean_voting.append(clean_sess)
             x += 1
+    y += 1
+y = 0
+while y < len(clean_voting):
+    if "РЕГИСТРАЦИЯ" in str(clean_voting[y][0]):
+        political_group_reg = ''.join(clean_voting[y][1][0])
+        name_reg = ''.join(clean_voting[y][0])
+        try:
+            by_list = int(clean_voting[y][1][1])
+        except ValueError:
+            by_list = ''.join(clean_voting[y][1][1])
+        except TypeError:
+            by_list = 0
+        try:
+            present = ''.join(clean_voting[y][1][2])
+        except TypeError:
+            try:
+                present = int(clean_voting[y][1][2])
+            except ValueError:
+                present = 'NULL'
+            except TypeError:
+                present = 'NULL'
+        try:
+            plus_online = ''.join(clean_voting[y][1][3])
+        except TypeError:
+            try:
+                plus_online = int(clean_voting[y][1][3])
+            except ValueError:
+                plus_online = 'NULL'
+            except TypeError:
+                plus_online = 'NULL'
+        data1 = registrations(name_reg, political_group_reg, present, by_list, plus_online)
+        db.session.add(data1)
+        db.session.commit()
+    else:
+        name = ''.join(clean_voting[y][0])
+        try:
+            for_ = ''.join(clean_voting[y][1][1])
+        except TypeError:
+            try:
+                for_ = int(clean_voting[y][1][1])
+            except ValueError:
+                for_ = 'NULL'
+            except TypeError:
+                for_ = 'NULL'
+        try:
+            against_ = ''.join(clean_voting[y][1][2])
+        except TypeError:
+            try:
+                against_ = int(clean_voting[y][1][2])
+            except ValueError:
+                against_ = 'NULL'
+            except TypeError:
+                against_ = 'NULL'
+        try:
+            political_group = ''.join(clean_voting[y][1][0])
+        except TypeError:
+            political_group = "NULL"
+        except ValueError:
+            political_group = "NULL"
+        try:
+            abstained = ''.join(clean_voting[y][1][3])
+        except TypeError:
+            try:
+                abstained = int(clean_voting[y][1][3])
+            except ValueError:
+                abstained = 'NULL'
+            except TypeError:
+                abstained = 'NULL'
+        try:
+            voted = ''.join(clean_voting[y][1][4])
+        except TypeError:
+            try:
+                voted = int(clean_voting[y][1][4])
+            except ValueError:
+                voted = 'NULL'
+            except TypeError:
+                voted = 'NULL'
+        data2 = sessions(name, political_group, for_, against_, abstained, voted)
+        db.session.add(data2)
+        db.session.commit()
     y += 1
