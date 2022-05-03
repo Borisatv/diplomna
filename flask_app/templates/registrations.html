@@ -42,26 +42,44 @@
 
     <div id="wrapper"></div>
 <script type="text/javascript">
-    //new gridjs.Grid({
-    console.log({
-        columns: ['Регистрация:', 'партия', 'присъстват', 'по списък', 'онлайн'],
-        data: "{{ data|safe }}"
-    });
-    //new gridjs.Grid({
-  //columns: ["Name", "Email", "Phone Number"],
-  //data: [
-  //  ["John", "john@example.com", "(353) 01 222 3333"],
-  //  ["Mark", "mark@gmail.com", "(01) 22 888 4444"],
-  //  ["Eoin", "eoin@gmail.com", "0097 22 654 00033"],
-   // ["Sarah", "sarahcdd@gmail.com", "+322 876 1233"],
-   // ["Afshin", "afshin@mail.com", "(353) 22 87 8356"]
-  //]
-//}).render(document.getElementById("wrapper"));
+    function () {
+  const tableRef = useRef(null);
+  const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    const grid = new Grid({
+      from: tableRef.current,
+    }).render(wrapperRef.current);
+  });
+
+  return (
+    <>
+      <table>
+        <tbody>
+            {% for row in data %}
+                <tr>
+                    {% for d in row %}
+                        <td>{{ d }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+      <div ref={wrapperRef} />
+    </>
+  );
+}
 </script>
 
     <table>
         <tbody>
-
+            {% for row in data %}
+                <tr>
+                    {% for d in row %}
+                        <td>{{ d }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
 </form>

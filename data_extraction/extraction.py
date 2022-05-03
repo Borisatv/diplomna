@@ -116,7 +116,6 @@ while i < len(sten_files):
     sheet = wb_obj.active
 
     sheet_rows = list(sheet.iter_rows())
-
     index = 0
 
     while index < len(sheet_rows):
@@ -137,13 +136,12 @@ y = 0
 clean_voting = []
 while y < len(all_voting):
     if "РЕГИСТРАЦИЯ" in all_voting[y][0][0]:
-        pass
         z = 2
         while z < len(all_voting[y]):
             if 'None' in str(all_voting[y][z][1]):
                 pass
             else:
-                clean_reg = [[all_voting[y][0][0]], all_voting[y][z]]
+                clean_reg = [all_voting[y][0][0], all_voting[y][z]]
                 clean_voting.append(clean_reg)
             z += 1
     else:
@@ -154,32 +152,33 @@ while y < len(all_voting):
             elif 'None' in str(all_voting[y][x][1]):
                 pass
             else:
-                clean_sess = [[all_voting[y][0][0]], all_voting[y][x]]
+                clean_sess = [all_voting[y][0][0], all_voting[y][x]]
                 clean_voting.append(clean_sess)
             x += 1
     y += 1
+
 y = 0
 while y < len(clean_voting):
     if "РЕГИСТРАЦИЯ" in str(clean_voting[y][0]):
-        political_group_reg = ''.join(clean_voting[y][1][0])
-        name_reg = ''.join(clean_voting[y][0])
+        political_group_reg = str(clean_voting[y][1][0])
+        name_reg = str(clean_voting[y][0])
         try:
-            by_list = int(clean_voting[y][1][1])
+            by_list = str(clean_voting[y][1][2])
         except ValueError:
-            by_list = ''.join(clean_voting[y][1][1])
+            by_list = int(clean_voting[y][1][2])
         except TypeError:
-            by_list = 0
+            by_list = 'NULL'
         try:
-            present = ''.join(clean_voting[y][1][2])
+            present = str(clean_voting[y][1][1])
         except TypeError:
             try:
-                present = int(clean_voting[y][1][2])
+                present = int(clean_voting[y][1][1])
             except ValueError:
                 present = 'NULL'
             except TypeError:
                 present = 'NULL'
         try:
-            plus_online = ''.join(clean_voting[y][1][3])
+            plus_online = str(clean_voting[y][1][3])
         except TypeError:
             try:
                 plus_online = int(clean_voting[y][1][3])
@@ -187,13 +186,14 @@ while y < len(clean_voting):
                 plus_online = 'NULL'
             except TypeError:
                 plus_online = 'NULL'
-        data1 = registrations(name_reg, political_group_reg, present, by_list, plus_online)
+        data1 = Registrations(name_reg, political_group_reg, present, by_list, plus_online)
         db.session.add(data1)
         db.session.commit()
     else:
-        name = ''.join(clean_voting[y][0])
+        name = str(clean_voting[y][0])
+        political_group = str(clean_voting[y][1][0])
         try:
-            for_ = ''.join(clean_voting[y][1][1])
+            for_ = str(clean_voting[y][1][1])
         except TypeError:
             try:
                 for_ = int(clean_voting[y][1][1])
@@ -202,7 +202,7 @@ while y < len(clean_voting):
             except TypeError:
                 for_ = 'NULL'
         try:
-            against_ = ''.join(clean_voting[y][1][2])
+            against_ = str(clean_voting[y][1][2])
         except TypeError:
             try:
                 against_ = int(clean_voting[y][1][2])
@@ -211,13 +211,7 @@ while y < len(clean_voting):
             except TypeError:
                 against_ = 'NULL'
         try:
-            political_group = ''.join(clean_voting[y][1][0])
-        except TypeError:
-            political_group = "NULL"
-        except ValueError:
-            political_group = "NULL"
-        try:
-            abstained = ''.join(clean_voting[y][1][3])
+            abstained = str(clean_voting[y][1][3])
         except TypeError:
             try:
                 abstained = int(clean_voting[y][1][3])
@@ -226,7 +220,7 @@ while y < len(clean_voting):
             except TypeError:
                 abstained = 'NULL'
         try:
-            voted = ''.join(clean_voting[y][1][4])
+            voted = str(clean_voting[y][1][4])
         except TypeError:
             try:
                 voted = int(clean_voting[y][1][4])
@@ -234,7 +228,7 @@ while y < len(clean_voting):
                 voted = 'NULL'
             except TypeError:
                 voted = 'NULL'
-        data2 = sessions(name, political_group, for_, against_, abstained, voted)
+        data2 = Sessions(name, political_group, for_, against_, abstained, voted)
         db.session.add(data2)
         db.session.commit()
     y += 1

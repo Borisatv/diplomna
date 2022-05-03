@@ -42,17 +42,37 @@
           </div>
          </div>
     </div>
-    <table>
-        <tbody>
-            {% for row in data['table'] %}
-                <tr>
-                    {% for d in row %}
-                        <td>{{ d }}</td>
+
+    <div id="wrapper"></div>
+        <script type="text/javascript">
+            var greet = function () {
+          const tableRef = useRef(null);
+          const wrapperRef = useRef(null);
+
+          useEffect(() => {
+              const grid = new Grid({
+              from: tableRef.current,
+              }).render(wrapperRef.current);
+          });
+
+          return(
+            <>
+              <table>
+               <tbody>
+                    {% for row in data['table'] %}
+                        <tr>
+                            {% for d in row %}
+                                <td>{{ d }}</td>
+                            {% endfor %}
+                        </tr>
                     {% endfor %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+              <div ref={wrapperRef} />
+            </>
+      );
+    }
+    </script>
 </form>
 </body>
 </html>

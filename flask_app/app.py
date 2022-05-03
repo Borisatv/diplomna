@@ -1,9 +1,21 @@
 from flask import Flask, render_template, request
-#   from flask_sqlalchemy import SQLAlchemy
-from flask_app.filter import *
-from flask import jsonify
+from flask_sqlalchemy import SQLAlchemy
+import filter
+#   from flask import jsonify
 
 import json
+
+labels = [
+    'Въздържали се', 'за', 'против'
+]
+
+values = [
+    4, 20, 2
+]
+
+colors = [
+    "#F7464A", "#46BFBD", "#FDB45C"]
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:21436587@localhost/sessions'
@@ -20,28 +32,26 @@ def index():
 @app.route('/registrations', methods=['GET', 'POST'])
 def registrations():
     data = []
-    if request.method == 'POST' and 'party' in request.form or 'name' in request.form:
+    if request.method == 'POST' and 'party' in request.form:
         party = request.form['party']
         name = request.form['name']
-        rows = filterRegistration(party, name)
-        for row in rows:
-            data.append(list(row))
-    return render_template('registrations.html', data=json.dumps(data))
+        data = filter.filter_registration(party, name)
+    return render_template('registrations.html', data=data)
 
 
 @app.route('/sessions', methods=['GET', 'POST'])
 def session():
-    data = {'parties': getRegisteredParties()}
+    data = {'parties': filter.get_registered_parties()}
     if request.method == 'POST' and 'party' in request.form:
         party = request.form['party']
         name = request.form['name']
-        data['table'] = filterSession(party, name)
+        data['table'] = filter.filter_session(party, name)
     return render_template('sessions.html', data=data)
 
 
 @app.route('/graphics')
 def graphics():
-    return render_template('graphics.html')
+    return render_template('graphics.html', max=17000, set=zip(values, labels, colors))
 
 
 if __name__ == "__main__":
