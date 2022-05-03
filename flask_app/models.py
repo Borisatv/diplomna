@@ -1,14 +1,15 @@
-from flask_app.app import db
+#   from flask_sqlalchemy import SQLAlchemy
+import app
 
 
-class sessions(db.Model):
-    id = db.Column("id", db.Integer, primary_key=True)
-    name = db.Column("name", db.String(2000))
-    political_group = db.Column("political_group", db.String(1000))
-    for_ = db.Column("for_", db.String(20))
-    against = db.Column("against_", db.String(20))
-    abstained = db.Column("abstained", db.String(20))
-    voted = db.Column("voted", db.String(20))
+class Sessions(app.db.Model):
+    id = app.db.Column("id", app.db.Integer, primary_key=True)
+    name = app.db.Column("name", app.db.String(2000))
+    political_group = app.db.Column("political_group", app.db.String(1000))
+    for_ = app.db.Column("for_", app.db.String(20))
+    against = app.db.Column("against_", app.db.String(20))
+    abstained = app.db.Column("abstained", app.db.String(20))
+    voted = app.db.Column("voted", app.db.String(20))
 
     def __init__(self, name, political_group, for_, against, abstained, voted):
         self.name = name
@@ -19,13 +20,13 @@ class sessions(db.Model):
         self.voted = voted
 
 
-class registrations(db.Model):
-    id = db.Column("id", db.Integer, primary_key=True)
-    name = db.Column("name", db.String(2000))
-    political_group = db.Column("political_group", db.String(1000))
-    present = db.Column("present", db.String(20))
-    by_list = db.Column("by_list", db.String(20))
-    plus_online = db.Column("plus_online", db.String(20))
+class Registrations(app.db.Model):
+    id = app.db.Column("id", app.db.Integer, primary_key=True)
+    name = app.db.Column("name", app.db.String(2000))
+    political_group = app.db.Column("political_group", app.db.String(1000))
+    present = app.db.Column("present", app.db.String(20))
+    by_list = app.db.Column("by_list", app.db.String(20))
+    plus_online = app.db.Column("plus_online", app.db.String(20))
 
     def __init__(self, name, political_group, present, by_list, plus_online):
         self.name = name
@@ -33,6 +34,3 @@ class registrations(db.Model):
         self.present = present
         self.by_list = by_list
         self.plus_online = plus_online
-
-    def as_dict(self):
-        return  { c.name: getattr(self, c.name) for c in self.__table__.columns }

@@ -1,35 +1,35 @@
-from flask_sqlalchemy import SQLAlchemy
-from flask_app.models import *
-
-db = SQLAlchemy()
+import app
+import models
 
 
-def filterRegistration(party, reg_name):
-    result = []# [('Регистрация:', 'партия', 'присъстват', 'по списък', 'онлайн')]
-    rows = registrations.query.with_entities(registrations.name, registrations.political_group, registrations.present,
-                                             registrations.by_list,
-                                             registrations.plus_online).filter(
-        registrations.name.contains(reg_name),
-        registrations.political_group == party).all()
-    x = 0
-    while x < len(rows):
-        result.append(rows[x])
-        x += 1
+def filter_registration(party, reg_name):
+    result = []
+    rows = models.Registrations.query.with_entities(models.Registrations.name, models.Registrations.political_group,
+                                                    models.Registrations.present,
+                                                    models.Registrations.by_list,
+                                                    models.Registrations.plus_online).filter(
+        models.Registrations.name.contains(reg_name),
+        models.Registrations.political_group == party).all()
+    y = 0
+    while y < len(rows):
+        result.append(rows[y])
+        y += 1
     return result
 
 
-def getRegisteredParties():
-    names = db.session.query(sessions.political_group).distinct()
+def get_registered_parties():
+    names = app.db.session.query(models.Sessions.political_group).distinct()
     result = list(map(lambda e: e[0], names))
     return result
 
 
-def filterSession(party, name):
+def filter_session(party, name):
     result = [('Заседание:', 'партия', 'за', 'против', 'въздържали се', 'гласували')]
-    rows = sessions.query.with_entities(sessions.name, sessions.political_group,
-                                        sessions.for_, sessions.against, sessions.abstained,
-                                        sessions.voted).filter(sessions.name.contains(name),
-                                                               sessions.political_group == party).all()
+    rows = models.Sessions.query.with_entities(models.Sessions.name, models.Sessions.political_group,
+                                               models.Sessions.for_, models.Sessions.against, models.Sessions.abstained,
+                                               models.Sessions.voted).filter(models.Sessions.name.contains(name),
+                                                                             models.Sessions.political_group
+                                                                             == party).all()
     y = 0
     while y < len(rows):
         result.append(rows[y])
